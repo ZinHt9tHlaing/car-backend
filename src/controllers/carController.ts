@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Car from "../models/Car";
 
 export const getAllCars = async (req: Request, res: Response) => {
-  const { name, featured, sort } = req.query;
+  const { name, featured, sort, select } = req.query;
 
   let query: any = {};
 
@@ -17,7 +17,11 @@ export const getAllCars = async (req: Request, res: Response) => {
   let results = Car.find(query);
 
   if (typeof sort === "string") {
-    results.sort(sort.split(",").join(" "));
+    results = results.sort(sort.split(",").join(" ")); // sort("name price")
+  }
+
+  if (typeof select === "string") {
+    results = results.select(select.split(",").join(" ")); // select("name price")
   }
 
   const cars = await results;
