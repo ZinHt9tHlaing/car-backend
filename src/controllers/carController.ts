@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Car from "../models/Car";
 
 export const getAllCars = async (req: Request, res: Response) => {
-  const { name, featured } = req.query;
+  const { name, featured, sort } = req.query;
 
   let query: any = {};
 
@@ -14,9 +14,13 @@ export const getAllCars = async (req: Request, res: Response) => {
     query.featured = featured === "true" ? true : false;
   }
 
-  console.log("query", query);
+  let results = Car.find(query);
 
-  const cars = await Car.find(query);
+  if (typeof sort === "string") {
+    results.sort(sort.split(",").join(" "));
+  }
+
+  const cars = await results;
 
   if (cars.length === 0) {
     return res.status(404).json({ message: "No cars found" });
