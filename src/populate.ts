@@ -1,4 +1,3 @@
-
 import "dotenv/config";
 import connectDB from "./config/connect";
 import Car from "./models/Car";
@@ -113,7 +112,7 @@ const populate = async () => {
     console.log("Cars added...");
     process.exit(0);
   } catch (err) {
-    console.log(err);
+    console.log("Could not add cars:", err);
   }
 };
 

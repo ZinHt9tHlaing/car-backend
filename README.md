@@ -72,7 +72,7 @@ Retrieves a list of cars. Supports query parameters for filtering, sorting, and 
 To populate the database with initial car data, run:
 
 ```bash
-npx ts-node src/populate.ts
+pnpm populate
 ```
 
 ## License
