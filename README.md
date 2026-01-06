@@ -49,7 +49,7 @@ Retrieves a list of cars. Supports query parameters for filtering, sorting, and 
 
 ```json
 {
-  "nbHits": 10,
+  "total": 10,
   "cars": [
     {
       "name": "Model S",
