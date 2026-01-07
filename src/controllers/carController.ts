@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import Car from "../models/Car";
 
 export const getAllCars = async (req: Request, res: Response) => {
-  const { name, featured, sort, select } = req.query;
+  const { name, featured, sort, select, numericFilters } = req.query;
 
   let query: any = {};
 
@@ -12,6 +12,37 @@ export const getAllCars = async (req: Request, res: Response) => {
 
   if (featured) {
     query.featured = featured === "true" ? true : false;
+  }
+
+  if (typeof numericFilters === "string") {
+    const operatorMap: Record<string, string> = {
+      ">": "$gt",
+      ">=": "$gte",
+      "=": "$eq",
+      "<": "$lt",
+      "<=": "$lte",
+    };
+
+    const regEx = /\b(>=|<=|>|<|=)\b/g;
+
+    const filters = numericFilters.replace(
+      regEx,
+      (match) => `-${operatorMap[match]}-`
+    );
+
+    const allowedFields = ["price", "rating"];
+
+    filters.split(",").forEach((item) => {
+      const [field, operator, value] = item.split("-");
+
+      if (!allowedFields.includes(field)) return;
+
+      if (!query[field]) {
+        query[field] = {};
+      }
+
+      query[field][operator] = Number(value);
+    });
   }
 
   let results = Car.find(query);
@@ -45,16 +76,14 @@ export const getAllCars = async (req: Request, res: Response) => {
   const hasPreviousPage = page > 1;
   const hasNextPage = page < totalPages;
 
-  res
-    .status(200)
-    .json({
-      message: "Get all cars",
-      total: totalCars,
-      page,
-      limit,
-      totalPages,
-      hasPreviousPage,
-      hasNextPage,
-      cars,
-    });
+  res.status(200).json({
+    message: "Get all cars",
+    total: totalCars,
+    page,
+    limit,
+    totalPages,
+    hasPreviousPage,
+    hasNextPage,
+    cars,
+  });
 };
